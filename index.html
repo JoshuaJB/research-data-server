@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+
+<head>
+<title>Pebble Acclerometer Demo</title>
+<script src="https://cdnjs.com/libraries/chart.js"></script>
+<script>
+var xinitdata = {
+	labels : [],
+	datasets : [
+		{
+			label: "X-Axis Acceleration",
+			fillcolor: "rgba(205,187,151,0.2)",
+			strokeColor: "rgba(205,187,151,1)",
+			pointColor: "rgba(205,187,151,1)",
+			pointStrokeColor: "#fff",
+			pointHighlightFill: "#fff",
+			pointHighlightStroke: "rgba(205,187,151,1)",
+			data: []
+		}
+	]
+};
+var xinitdata = {
+	labels : [],
+	datasets : [
+		{
+			label: "Y-Axis Acceleration",
+			fillcolor: "rgba(151,205,187,0.2)",
+			strokeColor: "rgba(151,205,187,1)",
+			pointColor: "rgba(151,205,187,1)",
+			pointStrokeColor: "#fff",
+			pointHighlightFill: "#fff",
+			pointHighlightStroke: "rgba(151,205,187,1)",
+			data: []
+		}
+	]
+};
+var zinitdata = {
+	labels : [],
+	datasets : [
+		{
+			label: "Z-Axis Acceleration",
+			fillcolor: "rgba(151,187,205,0.2)",
+			strokeColor: "rgba(151,187,205,1)",
+			pointColor: "rgba(151,187,205,1)",
+			pointStrokeColor: "#fff",
+			pointHighlightFill: "#fff",
+			pointHighlightStroke: "rgba(151,187,205,1)",
+			data: []
+		}
+	]
+};
+var xcontext = document.getElementById("x-axis").getContext("2d");
+var xchart = new Chart(xcontext).Line(xinitdata, {});
+var ycontext = document.getElementById("y-axis").getContext("2d");
+var ychart = new Chart(ycontext).Line(yinitdata, {});
+var zcontext = document.getElementById("z-axis").getContext("2d");
+var zchart = new Chart(zcontext).Line(zinitdata, {});
+
+var ws = new WebSocket("ws://research-data-server.azurewebsites.net:9000");
+ws.onopen = function(evt){console.log("connected");
+ws.onmessage = handlemessage;
+
+function handleMessage(e) {
+	var data = JSON.parse(e.data);
+	if (data.type !== undefined && data.type === "acceldata") {
+		xchart.addData([data.x], Date().now);
+		ychart.addData([data.y], Date().now);
+		zchart.addData([data.z], Date().now);
+
+	}
+	else {
+		console.warn("Unknown data: " + e.data);
+	}
+}
+</script>
+</head>
+
+<body>
+<h1>Live Pebble Data</h1>
+
+<h2>X-axis</h2>
+<canvas id="x-axis" width="600" height="200"></canvas>
+
+<h2>y-axis</h2>
+<canvas id="y-axis" width="600" height="200"></canvas>
+
+<h2>z-axis</h2>
+<canvas id="z-axis" width="600" height="200"></canvas>
