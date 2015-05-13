@@ -5,7 +5,10 @@ class MyServerProtocol(WebSocketServerProtocol):
 		self.sendMessage(payload, isBinary)
 
 if __name__ == '__main__':
-	import asyncio
+	try:
+		import asyncio
+	except ImportError:
+		import trollius as asyncio
 	from autobahn.asyncio.websocket import WebSocketServerFactory
 	factory = WebSocketServerFactory()
 	factory.protocol = MyServerProtocol
